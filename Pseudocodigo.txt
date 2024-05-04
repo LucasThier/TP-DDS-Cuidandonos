@@ -1,0 +1,129 @@
+***los metodos que no tienen un tipo aclarado son de tipo void***
+
+SolicitarViaje(Direccion ubicacionActua;, List<Parada> paradas, List<Persona> cuidadoresSolicitados)
+{
+   Viaje viaje = crear viaje con datos solicitados
+
+   viaje.estadoViaje = ESPERANDO_CONFIRMACION
+   
+   viaje.crearTrayectos(); // crea los trayectos de los distintos tramos y los almacena en la lista de trayectos 
+
+   viaje.notificarCuidadores(SOLICITUD_DE_CUIDADO);
+}
+
+aceptarViaje(Viaje viaje)
+{
+   Cuidador cuidador = crear cuidador
+   viaje.cuidadoresConfirmados.Add(cuidador)
+   viaje.habilitarInicioDeViaje()
+}
+
+rechazarViaje(Viaje viaje)
+{
+   viaje.cuidadoresSolicitados.remove(this)
+   if(viaje.cuidadoresSolicitados.IsEmpty())
+   {
+      viaje.cancelarViaje();
+      viaje.estadoViaje = CANCELADO;
+   }
+}
+
+habilitarInicioDeViaje()
+{
+   viajero.puedeComenzarViaje = true
+   habilitar boton comenzar viaje
+}
+comenzarViaje(in Viaje)
+{
+   viaje.ubicacionDePartida = actualizar a ubicacion actual
+   viaje.tiempoDeInicioDeViaje = Time.Now();
+   viaje.calcularTiempoDeDemora()
+   viaje.notificarCuidadores(INICIO_DE_VIAJE)
+   this.persona.recibirNotificaciones = false
+   viaje.estadoViaje = EN_CURSO;
+}
+
+int calcularTiempoDeDemoraTotalEnMinutos()
+{
+   int sumaEnMinutos = 0 
+
+   for(trayecto : trayectos)
+   {
+       sumaEnMinutos += trayecto.calcularDemoraDeTrayectoEnMinutos() + trayecto.destino.tiempoDetenidoEnMinutos
+   }
+   return sumaEnMinutos
+}
+
+int calcularTiempoEspeadoHastaFinalizarTrayectoEnMinutos(Trayecto trayecto)
+{
+   int sumaMinutos = 0
+   for(Trayecto tray : trayectos)
+   {
+     if(tray.equals(trayecto) break;
+     sumaMinutos += tray.calculadorDeDemora.calcularDemoraDeTrayectoEnMinutos(tray.origen.direccion, tray.destino.direccion);
+   }
+   sumaMinutos += trayecto.calculadorDeDemora.calcularDemoraDeTrayectoEnMinutos(tray.origen.direccion, tray.destino.direccion);
+   return sumaMinutos;
+}
+
+funcion llamada recurrentemente para verificar la "salud" del transeunte
+chequearTranseunteASalvo()
+{
+   int tiemproActualDeViaje = (Duration.between(this.tiempoDeInicioDeViaje, LocalDateTime.now()).toMinutes();
+   if(tipoDeAviso == PUNTO_A_PUNTO)
+	chequeoPuntoAPunto(this.trayectoActual.destino);
+   else if(tipoDeAviso == ESPERA_POR_PARADA)
+	chequeoEsperaPorParada(); 
+}
+
+chequeoPuntoAPunto(int tiemproActualDeViaje)
+{
+   if(tiemproActualDeViaje > this.calcularTiempoEspeadoHastaFinalizarTrayectoEnMinutos(trayectoActual))
+   {
+      this.ReaccionarAnteIncidente();
+   }
+}
+
+chequeoEsperaPorParada(int tiemproActualDeViaje)
+{
+   if(tiemproActualDeViaje > this.calcularTiempoDeDemoraTotalEnMinutos())
+   {
+      this.ReaccionarAnteIncidente();
+   }
+}
+
+notificarLlegadaASalvo()
+{
+   if(tipoDeAviso == PUNTO_A_PUNTO)
+      //si llego al destino final
+      if(viaje.trayectos.indexOf(viaje.trayectoActual) + 1 == viaje.trayectos.size())
+      {
+         finalizarViaje();
+      }
+      //si llego a una parada intermedia
+      else
+      {
+         viaje.trayectoActual = viaje.trayectos.get(viaje.trayectos.indexOf(viaje.trayectoActual) + 1)
+      }
+   else if(tipoDeAviso == ESPERA_POR_PARADA)
+   {
+      finalizarViaje()
+   }
+}
+
+finalizarViaje()
+{
+   viajero.persona.recibirNotificaciones = true
+
+   viaje.notificarCuidadores(FIN_DE_VIAJE)
+
+   viaje.estadoViaje = FINALIZADO;
+   
+   eliminar/destruir/persistir instancias de viaje, transeunte, cuidador, etc
+}
+
+reaccionarAnteIncidente()
+{
+  viaje.estadoViaje = EN_PELIGRO;
+  viajero.persona.reaccionAnteIncidente.reaccionar(this);
+}
